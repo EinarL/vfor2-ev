@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Sölusíðan |
+      {% block title %}
+        
+      {% endblock %}
+    </title>
+    {% load static %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'evApp/base.css' %}"/>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+      <a class="navbar-brand" href="{% url 'home' %}">Sölusíðan</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'create-listing' %}">Create a listing</a>
+          </li>
+          <li class="nav-item nav-user">
+            {% if request.user.is_authenticated %}
+              <span class="login-text">Hello, {{ request.user }}</span>
+              <span><a class="login-text" href="{% url 'logout' %}">Logout</a></span>
+            {% else %}
+              <span><a class="login-text" href="{% url 'login' %}">Login</a></span>
+              <span><a class="login-text" href="{% url 'register' %}">Register</a></span>
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">{% block content %} {% endblock %}</div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" ></script>
+  </body>
+</html>
+ 

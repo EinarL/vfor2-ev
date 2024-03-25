@@ -1,0 +1,190 @@
+
+.image-container {
+    position: relative;
+    overflow: hidden;
+    width: 50%;
+    max-height: 500px;
+    background-color: black;
+}
+
+.image-container img {
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.image-container img.active {
+    display: block;
+    width: 100%;
+    height: 500px;
+    object-fit: contain;
+}
+
+.button-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+}
+
+.prev, .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+}
+
+.prev {
+    left: 0;
+}
+
+.next {
+    right: 0;
+}
+
+#image-counter {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 3px;
+    margin: 0;
+}
+
+.desc {
+    white-space: pre-line;
+}
+
+#comment { /* the text area to comment on */
+    background-color: black;
+    border-color: white;
+    color: white;
+    width: 100%;
+}
+
+
+
+
+.comments {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 70%;
+    margin-bottom: 50px;
+}
+
+.comment {
+    background-color: black;
+    color: white;
+    margin: 0;
+    padding: 0 4px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+
+.comment-user {
+    color: rgb(177, 177, 177);
+    margin: 0;
+}
+
+.comment-text {
+    margin-left: 15px;
+    white-space: pre-line;
+}
+
+.comment-upvotes {
+    margin: 0;
+}
+
+.like-container {
+    display: flex;
+    gap: 10px;
+}
+
+.like-img, .liked-img {
+    width: 35px;
+    margin: -7px 0 5px 5px;
+    padding: 0;
+    z-index: 1;
+}
+
+.like-img:hover {
+    cursor: pointer;
+    content: url("./images/like_hover.png");
+}
+
+.liked-img:hover {
+    cursor: pointer;
+}
+
+.comment-bottom-row {
+    display: flex;
+}
+
+.comment-reply-conainer {
+    display: flex;
+    color: rgb(177, 177, 177);
+    margin: 0 10px -15px auto;
+    gap: 5px;
+}
+
+.comment-reply-conainer p:not(:first-child):hover {
+    color: #4385ff;
+    cursor: pointer;
+}
+
+.replies-container {
+    width: 90%;
+}
+
+.reply-container {
+    display: none;
+    gap: 10px;
+    background-color: black;
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.reply {
+    resize: both;
+}
+
+.replies-and-pages {
+    display: none;
+    flex-direction: column;
+}
+
+.replies div {
+    background-color: black;
+    color: white;
+    margin-top: 3px;
+    padding: 0 4px 1px 4px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.reply-user {
+    color: rgb(177, 177, 177);
+    margin: 0;
+}
+
+.reply-text {
+    margin: 0 0 7px 15px;
+    white-space: pre-line;
+}
+
+.reply-pages {
+    color: rgb(14, 184, 252);
+    display: flex;
+    margin: 5px auto;
+    gap: 8px;
+}
+
+.reply-pages *:hover {
+    color:#4385ff;
+    cursor: pointer;
+}

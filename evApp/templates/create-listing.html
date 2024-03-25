@@ -1,0 +1,148 @@
+{% extends "base.html" %} {% block title %} Create a new listing {% endblock %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'evApp/create-listing.css' %}"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<h1>Create a new listing</h1>
+<main>
+    {% for message in messages %}
+        <p id="messages">{{message}}</p>
+    {% endfor %}
+    <form method="POST" id="listing-form" action="" class="new-listing-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div><p class="title">Title:</p><input type="text" id="title" placeholder="Title..." name="title" value="{{ title }}"></div>
+        <div><p class="desc">Description:</p><textarea placeholder="Description..." id="description" name="description" rows="6" cols="70" maxlength="1024" style="resize: both;" >{{ desc }}</textarea></div>
+        <div><p class="price">Price (ISK):</p><input type="number" name="price" id="price" value="{{ price }}"></div>
+        <div class="image-logic">
+            <div id="dropZone" class="drop-zone" 
+            ondragover="handleDragOver(event)"
+            ondragenter="handleDragEnter(event)"
+            ondragleave="handleDragLeave(event)"
+            ondrop="handleDrop(event)">
+                <p>Drop images here</p>
+            </div>
+            <p>or</p>
+            <input type="file" id="fileInput" name="images[]" accept="image/*" multiple>
+            <label for="fileInput" class="select-image-button">Select Image</label>
+        </div>
+        <button type="submit" id="submit-btn">Submit</button>
+    </form>
+    <p>Your images will show up here:</p>
+    <div id="imagePreviews"></div>
+        
+    
+</main>
+<script>
+    let prevImages; // the images that are already in the fileInput
+
+    function handleDragOver(event) {
+        event.preventDefault();
+    }
+
+    function handleDragEnter(event) {
+        event.preventDefault();
+        event.currentTarget.classList.add('dragover');
+    }
+
+    function handleDragLeave(event) {
+        event.currentTarget.classList.remove('dragover');
+    }
+
+    function handleDrop(event) {
+        event.preventDefault();
+        event.currentTarget.classList.remove('dragover');
+
+        let files = event.dataTransfer.files;
+        let imageType = /^image\//;
+
+        let dataTransfer = new DataTransfer();
+
+        // Add existing files to the DataTransfer object
+        if(prevImages){
+            for (let i = 0; i < prevImages.length; i++) {
+                dataTransfer.items.add(prevImages[i]);
+            }
+        }
+
+
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            if (!imageType.test(file.type)) continue;
+            
+            // Add the file to the DataTransfer object
+            dataTransfer.items.add(file);
+
+            addImageToHtml(file);
+        }
+        document.getElementById('fileInput').files = dataTransfer.files;
+        prevImages = dataTransfer.files;
+    }
+
+    // Function to handle file selection
+    function handleFileSelect(event) {
+        const files = event.target.files;
+        const imageType = /^image\//; // regex
+
+        let dataTransfer = new DataTransfer();
+
+        if(prevImages){
+            for (let i = 0; i < prevImages.length; i++) {
+                dataTransfer.items.add(prevImages[i]);
+            }
+        }
+
+        let fileInput = document.getElementById('fileInput');
+        for (let i = 0; i < fileInput.files.length; i++) {
+            dataTransfer.items.add(fileInput.files[i]);
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+
+            if (imageType.test(file.type)) { // if the file is an image
+                addImageToHtml(file);
+            }
+        }
+        fileInput.files = dataTransfer.files;
+        prevImages = dataTransfer.files;
+    }
+
+    // Add event listener to the select image button
+    document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+
+    function addImageToHtml(image){ // display the image in the html
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const imageContainer = document.createElement('div');
+            imageContainer.classList.add('image-container');
+    
+            const imageElement = document.createElement('img');
+            imageElement.src = event.target.result;
+            imageElement.alt = '';
+    
+            const removeImgButton = document.createElement('button');
+            removeImgButton.classList.add('remove-img-btn');
+            removeImgButton.textContent = 'Close';
+            removeImgButton.addEventListener('click', function() {
+                // Get the index of the image container in the imagePreviews container
+                const index = Array.from(document.getElementById('imagePreviews').children).indexOf(imageContainer);
+
+                let dataTransfer = new DataTransfer(); // create a new list of images
+                for(let i = 0; i < prevImages.length; i++){ // add everything except the image to remove
+                    if (i != index) dataTransfer.items.add(prevImages[i]);
+                }
+                prevImages = dataTransfer.files;
+                document.getElementById('fileInput').files = dataTransfer.files;
+
+                imageContainer.remove(); 
+            });
+    
+            imageContainer.appendChild(imageElement);
+            imageContainer.appendChild(removeImgButton);
+    
+            document.getElementById('imagePreviews').appendChild(imageContainer);
+        };
+        reader.readAsDataURL(image);
+    }
+</script>
+{% endblock %}

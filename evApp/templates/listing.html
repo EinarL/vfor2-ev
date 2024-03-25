@@ -1,0 +1,321 @@
+{% extends "base.html" %} {% block title %} {{ listing.title }} {% endblock %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'evApp/listing.css' %}"/>
+<p>Seller: {{ listing.user }}</p>
+<h1>{{ listing.title }}</h1>
+<div class="image-container">
+    {% for image in images %}
+        <img src="{{ image.imageURL }}" alt="">
+    {% endfor %}
+    <button class="prev" onclick="prevImage()">❮</button>
+    <button class="next" onclick="nextImage()">❯</button>
+    <p id="image-counter">1/1</p>
+</div>
+<h4>{{ listing.price }}kr.</h4>
+<p class="desc">{{ listing.text }}</p>
+<section class="comments">
+    <form method="POST" action="">
+        {% csrf_token %}
+        {% if request.user.is_authenticated %}
+            <textarea name="comment" id="comment" placeholder="Comment..." cols="100" rows="2" maxlength="1024"></textarea>
+        {% else %}
+            <textarea name="comment" id="comment" placeholder="You need to be logged in to comment" cols="100" rows="2" maxlength="1024" disabled></textarea>
+        {% endif %}
+        <input type="submit" value="Comment" id="comment-btn" disabled>
+    </form>
+    {% for comment in comments %}
+        <div class="comment-and-reply-container">
+            <div class="comment">
+                <p class="comment-user">{{ comment.user }}</p>
+                <p class="comment-text">{{ comment.text }}</p>
+                <div class="comment-bottom-row">
+                    <div class="like-container">
+                        {% if comment.liked %}
+                            <img src="{% static 'evApp/images/liked.png' %}" class="liked-img" alt="" onclick="changeImageSrc(this)" data-comment-id="{{ comment.id }}">
+                        {% else %}
+                            <img src="{% static 'evApp/images/like.png' %}" class="like-img" alt="" onclick="changeImageSrc(this)" data-comment-id="{{ comment.id }}">
+                        {% endif %}
+                        <p class="comment-upvotes">{{ comment.upvotes }}</p>
+                    </div>
+                    <div class="comment-reply-conainer">
+                        <p class="reply-count">{{ comment.reply_count }}</p> ·
+                        <p class="show-replies">show replies</p> ·
+                        <p class="show-reply">reply</p>
+                    </div>
+                </div>      
+            </div>
+            <div class="replies-container">
+                <div class="reply-container">
+                    {% if request.user.is_authenticated %}
+                        <textarea name="reply" class="reply" cols="80" rows="1" placeholder="reply..." maxlength="1024"></textarea>
+                    {% else %}
+                        <textarea name="reply" class="reply" cols="80" rows="1" placeholder="You need to be logged in to reply" maxlength="1024" disabled></textarea>
+                    {% endif %}
+                    <button class="reply-btn" data-comment-id="{{ comment.id }}" disabled>Reply</button>
+                </div>
+                <div class="replies-and-pages">
+                    <div class="replies">
+                        {% for reply in comment.replies %}
+                            <div>
+                                <p class="reply-user">{{ reply.user }}</p>
+                                <p class="reply-text">{{ reply.text }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="reply-pages">
+                        {% if comment.has_next_page and comment.has_prev_page %}
+                            <p class="replies-prev" data-comment-id="{{ comment.id }}" data-page="1">Previous page</p> -
+                            <p class="replies-next" data-comment-id="{{ comment.id }}" data-page="1">Next page</p>
+                        {% elif comment.has_next_page %}
+                            <p class="replies-next" data-comment-id="{{ comment.id }}" data-page="1">Next page</p>
+                        {% elif comment.has_prev_page %}
+                            <p class="replies-prev" data-comment-id="{{ comment.id }}" data-page="1">Previous page</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</section>
+<script>
+
+const isLoggedIn = "{{ request.user.is_authenticated }}" == "True" ? true : false;
+console.log(isLoggedIn);
+
+function getReplies(commentId, nextPage, clickedElement){     
+    console.log("getting replies for");
+    console.log(commentId, nextPage);   
+    // AJAX request to fetch the next/prev page of replies
+    $.ajax({
+        url: "{% url 'get-replies' %}",
+        method: 'POST',
+        data: {
+            comment_id: commentId,
+            page: nextPage,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            const replies = response.replies;
+            const hasNextPage = response.hasNextPage;
+            const hasPrevPage = response.hasPrevPage;
+
+            const repliesContainer = $(clickedElement).closest('.replies-and-pages').find('.replies');
+            const replyPages = $(clickedElement).closest('.replies-and-pages').find('.reply-pages');
+            repliesContainer.empty();
+            replyPages.empty();
+
+            replies.forEach(reply => {
+                const replyElement = `
+                    <div>
+                        <p class="reply-user">${ reply.user }</p>
+                        <p class="reply-text">${ reply.text }</p>
+                    </div>
+                `;
+                repliesContainer.append(replyElement);
+            });
+
+            if(hasPrevPage){
+                replyPages.append(`<p class="replies-prev" data-comment-id="${commentId}" data-page="${nextPage}">Previous page</p>`);
+                if(hasNextPage) replyPages.append('-');
+            }
+            if(hasNextPage) replyPages.append(`<p class="replies-next" data-comment-id="${commentId}" data-page="${nextPage}">Next page</p>`);
+        },
+        error: function(xhr, status, error) {
+            console.error('Failed to fetch replies:', error);
+        }
+    });
+}
+ // AJAX pagination for replies
+ $('.reply-pages').on('click', '.replies-next, .replies-prev', function() {
+    const commentId = $(this).data('comment-id');
+    const currentPage = parseInt($(this).data('page'));
+    // Increment or decrement the current page based on the button clicked
+    const nextPage = $(this).hasClass('replies-next') ? currentPage + 1 : currentPage - 1;
+    const clickedElement = this;
+
+    getReplies(commentId, nextPage, clickedElement);
+});
+
+
+// like btn logic
+$(document).ready(function(){
+    $(".like-img, .liked-img").click(function(){
+        if(!isLoggedIn) return;
+        let commentId = $(this).data("comment-id");
+        let $upvotesElement = $(this).closest('.like-container').find('.comment-upvotes');
+        $.ajax({
+            url: "{% url 'like-comment' %}",
+            type: "POST",
+            data: { comment_id: commentId, csrfmiddlewaretoken: "{{ csrf_token }}" },
+            success: function(response){
+                if (response.liked) {
+                    // if liked
+                    let currentUpvotes = parseInt($upvotesElement.text());
+                    $upvotesElement.text(currentUpvotes + 1);
+                } else {
+                    // if unliked
+                    let currentUpvotes = parseInt($upvotesElement.text());
+                    $upvotesElement.text(currentUpvotes - 1);
+                }
+            },
+            error: function(xhr, errmsg, err){
+                console.log("Error: unable to like/unlike comment");
+            }
+        });
+    });
+});
+
+
+
+// reply btn logic
+$(document).ready(function(){
+    $(".reply-btn").click(function(){
+        let commentId = $(this).data("comment-id");
+        const replyContainer = $(this).closest('.reply-container');
+        const replyTextarea = replyContainer.find('.reply');
+        let replyText = replyTextarea.val();
+        const replyButton = $(this);
+        $.ajax({
+            url: "{% url 'reply' %}",
+            type: "POST",
+            data: { comment_id: commentId, reply_text: replyText, csrfmiddlewaretoken: "{{ csrf_token }}" },
+            success: function(response){
+
+                const repliesElement = replyButton.closest('.replies-container').find('.reply-pages');
+
+                getReplies(commentId, 1, repliesElement); // reload replies
+
+                // update reply count
+                const replyCount = replyButton.closest('.comment-and-reply-container').find('.reply-count');
+                let countText = replyCount.text(); // Get the text content
+                let count = parseInt(countText.match(/\d+/)[0]); // Extract the number count
+                count++; // Increment the count by one
+                // Update the text content with the new count
+                if(count == 1) replyCount.text(count + ' reply'); 
+                else replyCount.text(count + ' replies'); 
+
+
+                replyTextarea.val(''); // remove the text from the reply box
+                replyContainer.hide();
+            },
+            error: function(xhr, errmsg, err){
+                console.log("Error: unable to reply");
+            }
+        });
+    });
+});
+
+
+let currentImage = 0;
+const images = document.querySelectorAll('.image-container img');
+const imageCounter = document.getElementById('image-counter');
+const imageCount = images.length;
+
+function showImage(n) {
+    images.forEach(function(image) {
+        image.classList.remove('active');
+    });
+    images[n].classList.add('active');
+    imageCounter.textContent = n+1 + "/" + imageCount;
+}
+
+function prevImage() {
+    currentImage = (currentImage - 1 + images.length) % images.length;
+    showImage(currentImage);
+}
+
+function nextImage() {
+    currentImage = (currentImage + 1) % images.length;
+    showImage(currentImage);
+}
+
+showImage(currentImage);
+
+
+const commentTextarea = document.getElementById('comment');
+const commentBtn = document.getElementById('comment-btn');
+
+// Add event listener to the textarea
+commentTextarea.addEventListener('input', function() {
+    // Check if the length of the textarea value is at least 1
+    if (commentTextarea.value.length >= 1) {
+        // Enable the button
+        commentBtn.disabled = false;
+    } else {
+        // Disable the button
+        commentBtn.disabled = true;
+    }
+});
+
+const replyTextareas = document.getElementsByClassName('reply');
+const replyBtns = document.getElementsByClassName('reply-btn');
+
+// Add event listener to each reply textarea
+for (let i = 0; i < replyTextareas.length; i++) {
+    replyTextareas[i].addEventListener('input', function() {
+        // Check if the length of the textarea value is at least 1
+        if (this.value.length >= 1) {
+            // Enable the corresponding button
+            replyBtns[i].disabled = false;
+        } else {
+            // Disable the corresponding button
+            replyBtns[i].disabled = true;
+        }
+    });
+}
+
+// Add event listeners to all reply buttons
+document.querySelectorAll('.show-reply').forEach(function(replyButton) {
+    replyButton.addEventListener('click', function() {
+        // Get the parent element of the clicked reply button
+        const commentElement = this.closest('.comment-and-reply-container');
+
+        // Find the reply container within the comment element
+        const replyContainer = commentElement.querySelector('.reply-container');
+
+        // Toggle the visibility of the reply container
+        if (replyContainer.style.display === 'flex') {
+            replyContainer.style.display = 'none';
+        } else {
+            replyContainer.style.display = 'flex';
+        }
+    });
+});
+
+// show/hide the replies for each comment
+document.querySelectorAll('.show-replies').forEach(button => {
+    button.addEventListener('click', function() {
+        // Get the parent element
+        const parentElement = this.closest('.comment-and-reply-container');
+
+        // Find the reply container within the comment element
+        const replyContainer = parentElement.querySelector('.replies-and-pages');
+
+        // Toggle the visibility of the replies container
+        if (replyContainer.style.display === 'flex') {
+            replyContainer.style.display = 'none';
+            button.textContent = 'show replies';
+        } else {
+            replyContainer.style.display = 'flex';
+            button.textContent = 'hide replies';
+        }
+    });
+});
+
+
+
+function changeImageSrc(img) {
+    if(!isLoggedIn) return;
+    if (img.src.includes("like.png")) {
+        img.src = "{% static 'evApp/images/liked.png' %}";
+        img.classList.remove("like-img");
+        img.classList.add("liked-img"); 
+    } else {
+        img.src = "{% static 'evApp/images/like.png' %}";
+        img.classList.remove("liked-img");
+        img.classList.add("like-img"); 
+    }
+}
+</script>
+{% endblock %}

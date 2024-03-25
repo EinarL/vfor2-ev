@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% block title %} Home Page {% endblock %}
+{% block content %}
+<h1>Listings</h1>
+<main >
+    <section class="listings-container">
+        {% for listing in listings %}
+            <a href="{% url 'listing' id=listing.id %}" class="listing_link">
+                <div class="listing">
+                    <div>
+                        <h5 id="listing-title">{{listing.title}}</h4>
+                        {% if listing.image_url %}
+                            <img src="{{ listing.image_url }}" alt="">
+                        {% endif %}
+                        <p class="description">{{listing.text}}</p>
+                    </div>
+                    <p class="price" >{{listing.price}}kr.</p>
+                </div>
+            </a>
+        {% endfor %}
+    </section>
+    <div class="paginator">
+        <p>Page {{listings.number}} of {{listings.paginator.num_pages}}</p>
+        <div class="page-links">
+            {% if listings.has_previous %}
+                <a href="?page={{ listings.previous_page_number }}">Previous Page</a>
+            {% endif %}
+            {% if listings.has_next %}
+                <a href="?page={{ listings.next_page_number }}">Next Page</a>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}
