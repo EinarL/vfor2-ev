@@ -1,10 +1,20 @@
+.container {
+    height: 90vh;
+}
+
 body,
 html {
-    margin: 0;
+    margin: auto;
     padding: 0;
     height: 100%;
     background: #303030 !important;
 }
+
+main {
+    margin: auto;
+    height: 100%;
+}
+
 .user_card {
     width: 350px;
     margin-top: auto;

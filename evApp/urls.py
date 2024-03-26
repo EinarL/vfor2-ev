@@ -11,4 +11,5 @@ urlpatterns = [
     path('like/', views.likeComment, name="like-comment"),
     path('reply/', views.postReply, name="reply"),
     path('get-replies/', views.getReplies, name="get-replies"),
+    path('load-more-comments/', views.loadMoreComments, name="load-more-comments"),
 ]

@@ -65,7 +65,11 @@
 }
 
 
-
+#comments-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
 
 .comments {
     display: flex;
@@ -84,6 +88,15 @@
     width: 100%;
 }
 
+.comment-btn-row {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+}
+
+.comment-btn-row p {
+    margin: auto 10px auto auto;
+}
 
 .comment-user {
     color: rgb(177, 177, 177);
@@ -187,4 +200,17 @@
 .reply-pages *:hover {
     color:#4385ff;
     cursor: pointer;
+}
+
+#load-more-comments-btn {
+    background-color: #67aeff;
+    width: fit-content;
+    border: none;
+    border-radius: 4px;
+    margin: auto;
+    transition: background-color 0.2s ease;
+}   
+
+#load-more-comments-btn:hover {
+    background-color: #2f7dd6;
 }
