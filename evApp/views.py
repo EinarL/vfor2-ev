@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from .models import Listing, Image, Comment, Upvote, Reply
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -100,6 +100,25 @@ def showListing(request, id):
             'has_more_comments': commentCount > initialCommentAmount,
             'comments_loaded': initialCommentAmount
             })
+
+@login_required(login_url='login')
+def yourListings(request):
+    listings = Listing.objects.filter(user=request.user)
+
+    paginator = Paginator(listings, 8)
+    page = request.GET.get('page')
+    pageListings = paginator.get_page(page)
+    # Iterate over listings to fetch imageURLs for each listing
+    for listing in pageListings:
+        first_image = listing.images.first()  # Get the first image for the listing
+        if first_image:
+            listing.image_url = first_image.imageURL  # Assign the imageURL to listing.image_url
+        else:
+            listing.image_url = None  # If no image is found, assign None
+
+        if len(listing.title) > 22: # make sure the title is not too long
+            listing.title = listing.title[:22] + "..."
+    return render(request, "home.html", {"listings": pageListings, "your_listings": True})
 
 # load more comments in listing.html
 def loadMoreComments(request):
@@ -250,6 +269,34 @@ def logoutUser(request):
     logout(request)
     return redirect('login')
 
+def deleteListing(request):
+    listing_id = request.POST.get("listing_id")
+    
+    # Check if listing_id exists and is valid
+    if listing_id:
+        try:
+            listing = Listing.objects.get(id=listing_id)
+        except Listing.DoesNotExist:
+            return HttpResponse("Listing not found", status=404)
+        
+
+        images = listing.images.all()
+        print(images)
+        print(f"images length: {len(images)}")
+
+        for image in images:
+            try:
+                print(f"deleting: {image.imageURL}")
+                cloudinary.api.delete_resources(image.imageURL.public_id)
+            except Exception as e:
+                print(f"Failed to delete image from Cloudinary: {e}")
+
+        listing.delete()
+
+        # refresh the page
+        return HttpResponse("Listing deleted successfully", status=200)
+    else:
+        return HttpResponse("Invalid request", status=400)
 
 # function to get more info about a list of comments, this is not a view
 def getCommentInfo(isAuthenticated, user, comments):

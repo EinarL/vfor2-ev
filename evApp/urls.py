@@ -12,4 +12,6 @@ urlpatterns = [
     path('reply/', views.postReply, name="reply"),
     path('get-replies/', views.getReplies, name="get-replies"),
     path('load-more-comments/', views.loadMoreComments, name="load-more-comments"),
+    path('your-listings/', views.yourListings, name="your-listings"),
+    path('delete-listing/', views.deleteListing, name="delete-listing"),
 ]

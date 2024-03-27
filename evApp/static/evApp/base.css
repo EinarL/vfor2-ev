@@ -1,3 +1,5 @@
+/* css file for base and home.html */
+
 body {
     background-color: #303030;
     color: white;
@@ -6,6 +8,14 @@ body {
 .navbar-nav {
     display: flex;
     width: 100%;
+}
+
+.nav-link {
+    color: rgb(255, 255, 255) !important;
+}
+
+.nav-link:hover {
+    color: rgb(255, 215, 183) !important;
 }
 
 .navbar-custom{
@@ -62,6 +72,9 @@ body {
 .listing:hover .price {
     background-color: #0941a8;
 }
+
+
+
 
 .listing h5 {
     background-color: #4385ff;
@@ -121,6 +134,38 @@ body {
 .page-links{
     display: flex;
     gap: 20px;
+}
+
+.listing-container {
+    position: relative;
+}
+
+.listing-container:hover .delete-listing-btn {
+    display: block;
+}
+
+.delete-listing-btn {
+    font-family: 'Material Symbols Outlined', sans-serif;
+    vertical-align: top;
+    line-height: 1;
+    width: 30px;
+    height: 30px;
+    font-size: 25px;
+    position: absolute;
+    top: 10px;
+    right: 10px; 
+    background-color: rgb(255, 0, 0); 
+    border: 2px solid white;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: none;
+    transition: all 0.2s ease;
+}
+
+.delete-listing-btn:hover {
+    background-color: rgb(190, 0, 0); 
 }
 
 @media (max-width: 991px) {
