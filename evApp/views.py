@@ -41,7 +41,6 @@ def createListing(request):
 
 
         if len(title) == 0:
-            # TODO: check if price is valid
             messages.info(request, 'Title cannot be empty')
             return render(request, "create-listing.html", {'title': title, 'desc': desc, 'price': price})
         if len(title) > 50:
@@ -58,6 +57,9 @@ def createListing(request):
             return render(request, "create-listing.html", {'title': title, 'desc': desc, 'price': price})
         if len(images) > 10:
             messages.info(request, 'You cannot have more than 10 images')
+            return render(request, "create-listing.html", {'title': title, 'desc': desc, 'price': price})
+        if not (price.isdigit() and int(price) >= 0):
+            messages.info(request, 'The price must be a non-negative integer')
             return render(request, "create-listing.html", {'title': title, 'desc': desc, 'price': price})
         
         listing = Listing.objects.create(user=request.user, title=title, text=desc, price=price)
@@ -286,12 +288,9 @@ def deleteListing(request):
         
 
         images = listing.images.all()
-        print(images)
-        print(f"images length: {len(images)}")
 
         for image in images:
             try:
-                print(f"deleting: {image.imageURL}")
                 cloudinary.api.delete_resources(image.imageURL.public_id)
             except Exception as e:
                 print(f"Failed to delete image from Cloudinary: {e}")
