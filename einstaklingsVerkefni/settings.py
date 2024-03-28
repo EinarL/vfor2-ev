@@ -35,7 +35,7 @@ SECRET_KEY = 'django-insecure-0m(u(fhjk^omuo8oc!6irft^ipxxccj6kacjnzrxteqfhz%=&i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['vfor2-ev.onrender.com']
+ALLOWED_HOSTS = ['vfor2-ev.onrender.com', '127.0.0.1']
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 55242880
 

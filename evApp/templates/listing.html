@@ -300,7 +300,7 @@ function setReplyButtonClickListener(){
                     if(count == 1) replyCount.text(count + ' reply'); 
                     else replyCount.text(count + ' replies'); 
     
-    
+                    replyButton.prop('disabled', true);
                     replyTextarea.val(''); // remove the text from the reply box
                     replyContainer.hide();
                 },
