@@ -74,6 +74,7 @@ def createListing(request):
     return render(request, "create-listing.html", {'price': 0})
 
 # listing.html, id is the id of the listing
+@csrf_exempt
 def showListing(request, id):
     listing = get_object_or_404(Listing, pk=id)
     images = listing.images.all()
