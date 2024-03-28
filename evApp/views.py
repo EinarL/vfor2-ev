@@ -29,6 +29,7 @@ def home(request):
             listing.title = listing.title[:22] + "..."
     return render(request, "home.html", {"listings": pageListings})
 
+@csrf_exempt
 @login_required(login_url='login')
 def createListing(request):
 
