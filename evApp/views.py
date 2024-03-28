@@ -121,6 +121,7 @@ def yourListings(request):
     return render(request, "home.html", {"listings": pageListings, "your_listings": True})
 
 # load more comments in listing.html
+@csrf_exempt
 def loadMoreComments(request):
     listing_id = request.POST.get("listing_id")
     already_loaded_comments = int(request.POST.get("loaded_count")) # how many comments are already loaded
@@ -230,7 +231,7 @@ def getReplies(request):
                          'hasNextPage': len(totalReplies) > repliesPerPage * page,
                          'hasPrevPage': page > 1
                         })
-
+@csrf_exempt
 def registerPage(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -247,6 +248,7 @@ def registerPage(request):
     context = {'form': form}
     return render(request, 'register.html', context)
 
+@csrf_exempt
 def loginPage(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -269,6 +271,7 @@ def logoutUser(request):
     logout(request)
     return redirect('login')
 
+@csrf_exempt
 def deleteListing(request):
     listing_id = request.POST.get("listing_id")
     
