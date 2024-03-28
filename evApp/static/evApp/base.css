@@ -41,6 +41,37 @@ body {
 }
 
 
+.top-row {
+    display: flex;
+    align-items: center;
+}
+
+.order-by-container {
+    display: flex;
+    align-items: center;
+}
+
+.order-by-container p {
+    font-size: 18px;
+    margin: auto;
+    margin-right: 5px;
+}
+
+#sort_order {
+    padding: 2px 4px 2px 0;
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 4px; /* Rounded corners */
+    background-color: #3ca3e7; /* Background color */
+    font-size: 18px; /* Font size */
+  }
+
+
+
+#order-form {
+    margin-left: auto;
+    margin-right: 100px;
+}
+
 .listings-container{
     display: flex;
     flex-wrap: wrap;
@@ -49,7 +80,7 @@ body {
 
 .listing_link {
     display: block;
-    text-decoration: none; /* Remove default underline */
+    text-decoration: none;
 }
 
 .listing_link:hover {

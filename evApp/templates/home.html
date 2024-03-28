@@ -1,11 +1,25 @@
 {% extends "base.html" %} {% block title %} Home Page {% endblock %}
 {% block content %}
+<div class="top-row">
 {% if your_listings %}
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <h1>Your Listings</h1>
 {% else %}
     <h1>Listings</h1>
+    <form id="order-form" method="GET" action="{% url 'home' %}">
+        <div class="order-by-container">
+            <p>Order by:</p>
+            <select name="sort_order" id="sort_order">
+                <option value="newest" {% if order == 'newest' %} selected {% endif %}>Newest</option>
+                <option value="oldest" {% if order == 'oldest' %} selected {% endif %}>Oldest</option>
+                <option value="priceHigh" {% if order == 'priceHigh' %} selected {% endif %}>Price (Highest first)</option>
+                <option value="priceLow" {% if order == 'priceLow' %} selected {% endif %}>Price (Lowest first)</option>
+            </select>
+            <input type="hidden" name="page" value="{{ listings.number }}">
+        </div>
+    </form>
 {% endif %}
+</div>
 <main >
     <section class="listings-container">
         {% for listing in listings %}
@@ -32,14 +46,21 @@
         <p>Page {{listings.number}} of {{listings.paginator.num_pages}}</p>
         <div class="page-links">
             {% if listings.has_previous %}
-                <a href="?page={{ listings.previous_page_number }}">Previous Page</a>
+                <a href="?page={{ listings.previous_page_number }}&sort_order={{ order }}">Previous Page</a>
             {% endif %}
             {% if listings.has_next %}
-                <a href="?page={{ listings.next_page_number }}">Next Page</a>
+                <a href="?page={{ listings.next_page_number }}&sort_order={{ order }}">Next Page</a>
             {% endif %}
         </div>
     </div>
 </main>
+<script>
+    $(document).ready(function() {
+        $('#sort_order').change(function() {
+            $('#order-form').submit(); // Submit the form when dropdown selection changes
+        });
+    });
+</script>
 {% if your_listings %}
 <script>
 

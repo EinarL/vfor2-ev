@@ -13,9 +13,20 @@ from django.db.models import Case, When, IntegerField
 
 
 def home(request):
-    allListings = Listing.objects.all()
+    order = request.GET.get('sort_order') or "newest"
+
+    if order == "newest":
+        allListings = Listing.objects.all().order_by('-id')
+    elif order == "priceHigh":
+        allListings = Listing.objects.all().order_by('-price')
+    elif order == "priceLow":
+        allListings = Listing.objects.all().order_by('price')
+    else:
+        allListings = Listing.objects.all() # oldest
+
     paginator = Paginator(allListings, 8)
     page = request.GET.get('page')
+    
     pageListings = paginator.get_page(page)
     # Iterate over allListings to fetch imageURLs for each listing
     for listing in pageListings:
@@ -27,7 +38,7 @@ def home(request):
 
         if len(listing.title) > 22: # make sure the title is not too long
             listing.title = listing.title[:22] + "..."
-    return render(request, "home.html", {"listings": pageListings})
+    return render(request, "home.html", {"listings": pageListings, "order": order})
 
 @csrf_exempt
 @login_required(login_url='login')
