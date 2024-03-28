@@ -80,11 +80,23 @@ def createListing(request):
 def showListing(request, id):
     listing = get_object_or_404(Listing, pk=id)
     images = listing.images.all()
-    initialCommentAmount = 2 # TODO: change this number
+    initialCommentAmount = 4
+
+
 
     if request.method == 'POST':
         Comment.objects.create(text=request.POST.get('comment'), user=request.user, listing=listing)
-    allComments = Comment.objects.filter(listing=listing).order_by('-upvotes')
+
+    if request.user.is_authenticated:
+        # Create a conditional expression for sorting because we want this users comments to be at the top
+        order_by_expression = Case(
+            When(user=request.user, then=0),  # Assign 0 if user = request.user
+            default=1,  # Assign 1 otherwise
+            output_field=IntegerField()
+        )
+        allComments = Comment.objects.filter(listing=listing).order_by(order_by_expression, '-upvotes')
+    else:
+        allComments = Comment.objects.filter(listing=listing).order_by('-upvotes')
     comments = allComments[:initialCommentAmount]
 
     # get how many comments there are
@@ -130,9 +142,18 @@ def loadMoreComments(request):
     listing_id = request.POST.get("listing_id")
     already_loaded_comments = int(request.POST.get("loaded_count")) # how many comments are already loaded
 
-    loadCount = 2 # how many more comments we will load
+    loadCount = 4 # how many more comments we will load
 
-    allComments = Comment.objects.filter(listing=listing_id).order_by('-upvotes')
+    if request.user.is_authenticated:
+        # Create a conditional expression for sorting because we want this users comments to be at the top
+        order_by_expression = Case(
+            When(user=request.user, then=0),  # Assign 0 if user = request.user
+            default=1,  # Assign 1 otherwise
+            output_field=IntegerField()
+        )
+        allComments = Comment.objects.filter(listing=listing_id).order_by(order_by_expression, '-upvotes')
+    else:
+        allComments = Comment.objects.filter(listing=listing_id).order_by('-upvotes')
 
     endIndex = already_loaded_comments + loadCount
     moreComments = allComments[already_loaded_comments : endIndex]
