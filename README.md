@@ -8,7 +8,7 @@ Annað sem ég ætti að minnast á er að ég nota AJAX til að senda requests 
 Þau skylirði sem ég uppfylli eru eftirfarandi:
 + Notendaumsjón
   - Það sem er nice við Django er að það gerir þetta meira auðvelt fyrir mann að útfæra vegna þess að það býr sjálfkrafa til SQL töflu fyrir notendur, hashar passwordin, og að það validatar username og password sjálfkrafa.
-  - Ég passa upp á að notendurnir sem eru ekki innskráðir geta ekki farið inn síður þar sem maður þarf að vera innskráður (eins og create listing síðuna), til þess þarf bara að hafa `@login_required` fyrir ofan viewið í views.py og þá mun notandinn vera færður yfir á login síðuna ef hann reynir að fara á þessa síðu án þess að vera innskráður.
+  - Ég passa upp á að notendurnir sem eru ekki innskráðir geta ekki farið inn á síður þar sem maður þarf að vera innskráður (eins og create listing síðuna), til þess þarf bara að hafa `@login_required` fyrir ofan viewið í views.py og þá mun notandinn vera færður yfir á login síðuna ef hann reynir að fara á þessa síðu án þess að vera innskráður.
   - Einnig passa ég upp á að notendur sem eru ekki innskráðir geta ekki like-að comment eða commentað.
 + Bakendi
   - Ég nota Django sem bakenda.
