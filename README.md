@@ -30,3 +30,7 @@ Annað sem ég ætti að minnast á er að ég nota AJAX til að senda requests 
 Annað sem var auðvelt og gekk vel er að nota `Paginator` í Django, þar sem á síðunni minni er hægt að fletta í gegnum "listings", það myndi vanalega þurfa að skrifa mikinn kóða til að útfæra þessa virkni en það var mjög auðvellt að útfæra þetta með því að nota `Paginator`.
 
 Það er í raun og veru lítið sem ekkert sem gekk illa, það sem ég var mest að vesenast með og tók smá tíma myndi ég segja að væri kóðinn á bakvið mynda virknina á Create listing síðunni. Semsagt JavaScript og HTML kóðinn sem höndlar því að fá images og svo senda þær á bakendann.
+
+### Annað
+
+Ég mæli með fyrir þann sem fer yfir þetta verkefni að fara á "Sætir kisar til sölu" listing (https://vfor2-ev.onrender.com/listing/6/) til þess að sjá hvernig virknin á Comments og replies virkar. Það er nefnilega lítið eða ekkert af commentum á öðrum listings vegna þess að það tekur tíma að gera sample data allstaðar, en ég gerði nóg af comments á þessari síðu svo að það er hægt að fara yfir virknina á því.
