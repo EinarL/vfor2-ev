@@ -25,7 +25,7 @@ Annað sem ég ætti að minnast á er að ég nota AJAX til að senda requests 
 
 ### Hvernig gekk?
 
-Það er margt sem gekk mjög vel sérstaklega vegna þess að hversu auðvelt Django lætur hlutina vera. Eins og ég var búinn að minnast á að ofan, þá hjálpar Django mikið við með notendaumsjónina. En ekki bara það, ég þurfti til dæmis ekki að skrifa neinn SQL kóða, Django býr til töflurnar út frá hvernig ég skilgreini þær í models.py skránni.
+Það er margt sem gekk mjög vel sérstaklega vegna þess að hversu auðvelt Django lætur hlutina vera. Eins og ég var búinn að minnast á að ofan, þá hjálpar Django mikið við með notendaumsjónina. En ekki bara það, ég þurfti til dæmis ekki að skrifa neinn SQL kóða, Django býr til töflurnar út frá hvernig ég skilgreini þær í models.py skránni, og svo fylgir Admin síða þar sem notandi sem er "administrator" getur bætt við, breytt og eytt gögnum, þannig maður þarf ekki einu sinni að snerta databaseinn nema ef maður sérstaklega vill það.
 
 Annað sem var auðvelt og gekk vel er að nota `Paginator` í Django, þar sem á síðunni minni er hægt að fletta í gegnum "listings", það myndi vanalega þurfa að skrifa mikinn kóða til að útfæra þessa virkni en það var mjög auðvellt að útfæra þetta með því að nota `Paginator`.
 
